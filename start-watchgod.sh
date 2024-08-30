@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# This script will start the api and will reload the service if the main python file changes. It uses a lot of CPU to monitor the files though
+
 # Navigate to the directory containing your FastAPI application
 cd /home/justin/api
 

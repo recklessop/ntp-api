@@ -76,7 +76,7 @@ async def root():
 async def get_ntp_time(request: Request):
     formatted_time, timestamp = request_time_from_ntp()
     return {
-        "ntp_server": "time.jpaul.io",
+        "ntp_server": "localhost",
         "timestamp": timestamp,
         "formatted_time": formatted_time
     }
