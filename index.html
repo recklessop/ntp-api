@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Clock</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        .clock {
+            margin: 20px;
+        }
+    </style>
+    <script>
+        async function fetchNTPTime() {
+            try {
+                const response = await fetch('/ntp');
+                const data = await response.json();
+                return data.formatted_time;
+            } catch (error) {
+                console.error('Error fetching time:', error);
+                return 'Error fetching time';
+            }
+        }
+
+        async function updateClocks() {
+            const timezones = [
+                { name: 'New York', tz: 'America/New_York' },
+                { name: 'London', tz: 'Europe/London' },
+                { name: 'Paris', tz: 'Europe/Paris' },
+                { name: 'Tel Aviv', tz: 'Asia/Jerusalem' },
+                { name: 'Tokyo', tz: 'Asia/Tokyo' },
+                { name: 'Sydney', tz: 'Australia/Sydney' }
+            ];
+
+            const ntpTime = await fetchNTPTime();
+            const baseTime = moment(ntpTime, 'ddd MMM DD HH:mm:ss YYYY').tz('America/New_York'); // Parse as EST
+            if (!baseTime.isValid()) {
+                document.getElementById('clocks').innerHTML = 'Invalid date';
+                return;
+            }
+
+            timezones.forEach(tz => {
+                const time = baseTime.clone().tz(tz.tz).format('YYYY-MM-DD HH:mm:ss');
+                document.getElementById(tz.name).innerText = `${tz.name}: ${time}`;
+            });
+        }
+
+        window.onload = function() {
+            updateClocks();
+            setInterval(updateClocks, 1000); // Update every 10 seconds
+        }
+    </script>
+</head>
+<body>
+    <h1>The Current Time is:</h1>
+    <div id="clocks">
+        <div class="clock" id="New York">Loading...</div>
+        <div class="clock" id="London">Loading...</div>
+        <div class="clock" id="Paris">Loading...</div>
+        <div class="clock" id="Tel Aviv">Loading...</div>
+        <div class="clock" id="Tokyo">Loading...</div>
+        <div class="clock" id="Sydney">Loading...</div>
+    </div>
+    <p><a href="/docs">API Docs here</a></p>
+</body>
+</html>
